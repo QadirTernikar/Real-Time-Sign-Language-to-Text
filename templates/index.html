@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Translator</title>
+</head>
+<body>
+    <h1>Sign Language Translator</h1>
+    
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="file-upload" name="file" accept="image/*">
+        <button type="submit">Predict</button>
+    </form>
+
+    <p id="prediction"></p>
+
+    <script>
+        document.getElementById('upload-form').onsubmit = async function(event) {
+            event.preventDefault();
+            let formData = new FormData();
+            formData.append('file', document.getElementById('file-upload').files[0]);
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById('prediction').innerText = "Prediction: " + result.prediction;
+
+            // Use Web Speech API to convert text to voice
+            const utterance = new SpeechSynthesisUtterance(result.prediction);
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
